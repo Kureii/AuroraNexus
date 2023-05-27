@@ -2,9 +2,14 @@
 AuroraNexus is a content management system (CMS) based on the crown framework
 
 ## Install
-### Linux
+Update and upgrade package system.
+```bash
+# Debian based
+sudo apt update && sudo apt upgrade
+```
+Install libraries
+```bash
+# Debian based
+sudo apt-get install libboost-all-dev
+```
 
-#### Debian based system
-
-1. Download binnary of [crow](https://github.com/CrowCpp/Crow/releases/tag/v1.0%2B5).
-2. Install crow
