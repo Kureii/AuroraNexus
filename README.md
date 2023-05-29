@@ -14,18 +14,16 @@ Install libraries
 # Debian based
 sudo apt-get install libboost-all-dev 
 ```
+install [boost DI](https://github.com/boost-ext/di)
 download and install [Connector/C++ 8.0.33](https://dev.mysql.com/downloads/connector/cpp/)
+
+
 
 Install MySQL
 ```bash
 sudo apt install mysql-server 
 ```
-configure MySql
-```bash
-sudo mysql
-```
-
-set password for root – replace 'your_password' with your password
+configure MySql – Set password for root – replace 'your_password' with your password
 ```sql
 ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'your_password';
 FLUSH PRIVILEGES;

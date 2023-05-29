@@ -16,7 +16,12 @@ find_path(MYSQLCPPCONN_INCLUDE_DIR
         NAMES mysql_driver.h
         HINTS "/usr/include/cppconn")
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME}
+        src/main.cpp
+        src/interfaces/database_connection.hpp
+        src/infrastructure/database_repositories/aurora_mysql_connection.hpp
+        src/infrastructure/database_repositories/database_service.hpp
+        )
 
 include_directories(${Boost_INCLUDE_DIRS})
 
