@@ -2,5 +2,5 @@
 
 ## Dependences
 ```
-sudo dnf install clang-tools-extra cppcheck gtest gtest-devel
+sudo dnf install clang-tools-extra cppcheck gtest gtest-devel boost boost-devel
 ```
