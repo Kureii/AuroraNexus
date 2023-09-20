@@ -16,8 +16,8 @@ project(
 )
 
 # Set project variables
-include(src/sources.cmake)
 include(include/include.cmake)
+include(src/sources.cmake)
 
 message(STATUS "Found the following sources:")
 
