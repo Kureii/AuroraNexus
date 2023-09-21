@@ -5,21 +5,22 @@ LABEL version="0.1.1"
 
 RUN dnf update -y && \
     dnf install -y \
+    git \
+    curl \
     cmake \
     gcc \
     clang \
     clang-tools-extra \
     cppcheck \
+    ninja-build \
+    gdb \
+    valgrind \
     gtest \
     gtest-devel \
     gmock \
     gmock-devel \
     boost \
     boost-devel \
-    ninja-build \
-    gdb \
-    git \
-    curl \
     && dnf clean all
 
 # Copying source files
