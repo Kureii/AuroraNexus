@@ -12,23 +12,23 @@ void handle_client(boost::asio::ip::tcp::socket& socket) {
 }
 
 int main() {
-  boost::asio::io_context io_context;
-  boost::asio::ip::tcp::acceptor acceptor(
-      io_context,
-      boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 8080));
-
-  aurora_nexus::ThreadPool pool(100, 10e4, 50);
-
-  while (true) {
-    auto socket = std::make_shared<boost::asio::ip::tcp::socket>(io_context);
-    acceptor.accept(*socket);
-
-    aurora_nexus::Task const task([socket] {
-      handle_client(*socket);
-    });
-
-    pool.Enqueue(task);
-  }
+//  boost::asio::io_context io_context;
+//  boost::asio::ip::tcp::acceptor acceptor(
+//      io_context,
+//      boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 8080));
+//
+//  aurora_nexus::ThreadPool pool(100, 10e4, 50, 0.8, 0.7);
+//
+//  while (true) {
+//    auto socket = std::make_shared<boost::asio::ip::tcp::socket>(io_context);
+//    acceptor.accept(*socket);
+//
+//    aurora_nexus::Task const task([socket] {
+//      handle_client(*socket);
+//    });
+//
+//    pool.Enqueue(task);
+//  }
 
   return 0;
 }

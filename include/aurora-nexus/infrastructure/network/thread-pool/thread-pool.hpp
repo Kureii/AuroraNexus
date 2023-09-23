@@ -8,39 +8,32 @@
 #include <condition_variable>
 #include <map>
 #include "task.h"
+#include "thread-pool-node.h"
 
 namespace aurora_nexus {
 
 class ThreadPool {
  public:
-  ThreadPool(size_t numThreads, size_t maxQueueSize, uint16_t dynamicStepSize);
+  ThreadPool(uint32_t initial_count, uint16_t step_size, uint64_t queue_size);
   ~ThreadPool();
   void Enqueue(const Task& task);
 
-#ifdef ENABLE_TESTS
-  size_t GetWorkerCount();
-#endif
+//#ifdef ENABLE_TESTS
+  [[nodiscard]]size_t GetThreadCount() const;
+  //size_t GetRunnungTasks();
+//#endif
 
  private:
-  void WorkerFunction();
-  void AddWorkers();
-  void RemoveWorkers();
-  void WaitAndRemoveWorker(std::thread::id worker_id);
-  void DynamicScalingFunction();
-  size_t CountRunningThreads();
+  uint32_t initial_count_;
+  uint16_t step_size_;
+  uint64_t queue_size_;
+  uint64_t thread_count_;
+  std::shared_ptr<ThreadPoolNode> root_node_;
+  mutable std::mutex mutex_;
 
-  size_t initial_threads_num_;
-  std::vector<std::thread> workers_;
-  std::queue<Task> task_queue_;
-  std::thread scaling_thread_;
-  size_t max_queue_size_;
-  uint16_t dynamic_step_size_;
-  std::map<std::thread::id, TaskStatus> thread_status_map_;
+  void IncrementThreadCount();
+  void DecrementThreadCount();
 
-  std::mutex mutex_;
-  std::condition_variable condition_;
-  bool stop_;
-  bool dynamic_scaling_enabled_;
 };
 
 }  // namespace aurora_nexus
