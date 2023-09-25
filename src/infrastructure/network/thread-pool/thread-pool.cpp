@@ -46,20 +46,17 @@ ThreadPool::ThreadPool(uint32_t initial_count, uint16_t step_size,
   thread_count_ = 0;
   if (initial_count == step_size) {
     // Initialize non endpoint as a root node
-    auto* tmp = new ThreadPoolNode(false);
-    root_node_ = std::make_shared<ThreadPoolNode>(tmp);
+    root_node_ = std::make_shared<ThreadPoolNode>(false, step_size);
 
     // Initialize endpoint as a child of root node
-    tmp = new ThreadPoolNode(true);
-    auto last_node = std::make_shared<ThreadPoolNode>(tmp);
+    auto last_node = std::make_shared<ThreadPoolNode>(true, step_size);
     last_node->SetRootNode(root_node_);
     root_node_->SetChildNode(last_node);
     IncrementThreadCount();
 
     // Add other endpoints
     for (uint16_t i = 0; i < initial_count - 1; ++i) {
-      tmp = new ThreadPoolNode(true);
-      auto shared_tmp = std::make_shared<ThreadPoolNode>(tmp);
+      auto shared_tmp = std::make_shared<ThreadPoolNode>(true, step_size);
       shared_tmp->SetRootNode(root_node_);
       last_node->SetNextNode(shared_tmp);
       last_node = shared_tmp;
@@ -69,13 +66,11 @@ ThreadPool::ThreadPool(uint32_t initial_count, uint16_t step_size,
     // Create all end points lists and save to end_points_lists
     auto end_points_lists = new std::list<std::shared_ptr<ThreadPoolNode>>;
     for (uint32_t i = 0; i < initial_count;) {
-      auto tmp = new ThreadPoolNode(true);
-      auto last_node = std::make_shared<ThreadPoolNode>(tmp);
+      auto last_node = std::make_shared<ThreadPoolNode>(true, step_size);
       IncrementThreadCount();
       end_points_lists->emplace_back(last_node);
       for (uint16_t j = 0; j < step_size - 1; ++j) {
-        tmp = new ThreadPoolNode(true);
-        auto shared_tmp = std::make_shared<ThreadPoolNode>(tmp);
+        auto shared_tmp = std::make_shared<ThreadPoolNode>(true, step_size);
         last_node->SetNextNode(shared_tmp);
         last_node = shared_tmp;
         IncrementThreadCount();
@@ -90,8 +85,7 @@ ThreadPool::ThreadPool(uint32_t initial_count, uint16_t step_size,
           new std::list<std::shared_ptr<ThreadPoolNode>>;
 
       while (!non_end_points_lists->empty()) {
-        auto tmp = new ThreadPoolNode(false);
-        auto mini_root_node = std::make_shared<ThreadPoolNode>(tmp);
+        auto mini_root_node = std::make_shared<ThreadPoolNode>(false, step_size);
         auto last_node = non_end_points_lists->back();
         non_end_points_lists->pop_back();
         {
@@ -109,8 +103,7 @@ ThreadPool::ThreadPool(uint32_t initial_count, uint16_t step_size,
         auto mini_root_node_next = mini_root_node;
         for (uint16_t j = 0;
              j < step_size - 1 && !non_end_points_lists->empty(); ++j) {
-          tmp = new ThreadPoolNode(false);
-          mini_root_node_next = std::make_shared<ThreadPoolNode>(tmp);
+          mini_root_node_next = std::make_shared<ThreadPoolNode>(false, step_size);
           mini_root_node->SetNextNode(mini_root_node_next);
           last_node = non_end_points_lists->back();
           mini_root_node_next->SetChildNode(last_node);
@@ -167,6 +160,10 @@ void ThreadPool::Enqueue(const Task& task) {
 size_t ThreadPool::GetThreadCount() const {
   std::lock_guard<std::mutex> const lock(mutex_);
   return thread_count_;
+}
+std::shared_ptr<ThreadPoolNode> ThreadPool::GetRootNode() const {
+  std::lock_guard<std::mutex> const lock(mutex_);
+  return root_node_;
 }
 // size_t ThreadPool::GetRunnungTasks() {return std::count_if(
 //           thread_status_map_.begin(), thread_status_map_.end(),
