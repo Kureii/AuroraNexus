@@ -20,6 +20,7 @@
 #define UP_STEP_MULTIPLIER 0.95
 #define DOWN_STEP_MULTIPLIER 0.5
 
+
 TEST(THREAD_POOL, initialize_throw_initial_count_is_not_multipl_step_size) {
   ASSERT_THROW(aurora_nexus::ThreadPool(40,50,1000), std::underflow_error);
   try {
@@ -106,6 +107,17 @@ TEST(THREAD_POOL, Initialize_more_than_minimum_threads) {
   auto result = 30;
 
   ASSERT_EQ(tp->GetThreadCount(), result);
+}
+
+TEST(THREAD_POOL, Initialize_minimum_threads_root_node_not_endpoint) {
+  auto tp = std::make_unique<aurora_nexus::ThreadPool>(10,10,100);
+
+  ASSERT_FALSE(tp.get()->GetRootNode()->IsEndNode());
+}
+TEST(THREAD_POOL, Initialize_more_than_minimum_threads_root_node_not_endpoint) {
+  auto tp = std::make_unique<aurora_nexus::ThreadPool>(100,10,1000);
+
+  ASSERT_FALSE(tp.get()->GetRootNode()->IsEndNode());
 }
 //
 //TEST(THREAD_POOL, InitializeWithDynamicScalingFunction) {
