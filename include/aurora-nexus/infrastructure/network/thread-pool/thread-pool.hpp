@@ -20,6 +20,7 @@ class ThreadPool {
 
 //#ifdef ENABLE_TESTS
   [[nodiscard]]size_t GetThreadCount() const;
+  [[nodiscard]]std::shared_ptr<ThreadPoolNode> GetRootNode() const;
   //size_t GetRunnungTasks();
 //#endif
 
