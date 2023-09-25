@@ -17,19 +17,24 @@ enum TaskStatus {
 };
 
 struct Task {
-  std::function<void()> job_;
-  std::function<void()> on_error_;
   TaskStatus status;
 
-  Task(std::function<void()> job, std::function<void()> on_error)
-      : job_(job), on_error_(on_error), status(kWait) {}
+  Task() : status(kWait) {};
 
-  void execute() {
+  void execute(const std::function<void()>& job, const std::function<void()>& on_error) {
     status = kRunning;
+    if (on_error == nullptr) {
+        std::cerr << "Warning: on_error in task "<< this << " is nullptr.\n";
+    }
+    if (job == nullptr) {
+        std::cerr << "Warning: on_error in task " << this << " is nullptr.\n";
+    }
     try {
-      job_();
+      job();
     } catch (...) {
-      on_error_();
+      if (on_error != nullptr) {
+        on_error();
+      }
     }
     status = kFinished;
   }
