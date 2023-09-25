@@ -10,10 +10,10 @@ namespace aurora_nexus {
 
 //================================= Public method ==============================
 
-ThreadPoolNode::ThreadPoolNode(bool end_node)
-    : end_node_(end_node)
+ThreadPoolNode::ThreadPoolNode(bool end_node, uint16_t node_limit)
+    : end_node_(end_node), node_limit_(node_limit)
       {
-  task_ = std::make_unique<Task>(Task(nullptr, nullptr));
+  task_ = std::make_unique<Task>();
 }
 
 void ThreadPoolNode::ThreadLoop() {
@@ -25,17 +25,20 @@ void ThreadPoolNode::ThreadLoop() {
       break;
     }
 
-    task_->execute();
+    if (root_node_ != nullptr) {
+      root_node_->IncrementRunningCount();
+    }
+
+    task_->execute(job_, on_error_);
 
     if (root_node_ != nullptr) {
-      // TODO: counter
+        root_node_->DecrementRunningCount();
     }
   }
-
 }
 
+// only readable variable, mutex is useless
 bool ThreadPoolNode::IsEndNode() const {
-  std::lock_guard<std::mutex> const lock(mutex_);
   return end_node_;
 }
 
@@ -82,21 +85,26 @@ void ThreadPoolNode::SetNextNode(
   next_node_ = nextNode;
 }
 
+
+void ThreadPoolNode::SetJob(const std::function<void()>& new_job) {
+  job_ = new_job;
+}
+
+void ThreadPoolNode::SetOnError(const std::function<void()>& new_on_error) {
+  on_error_ = new_on_error;
+}
+
 void ThreadPoolNode::IncrementRunningCount() {
-  std::lock_guard<std::mutex> const lock(mutex_);
   ++running_count_;
 }
 
 void ThreadPoolNode::DecrementRunningCount() {
-  std::lock_guard<std::mutex> const lock(mutex_);
   --running_count_;
 }
 void ThreadPoolNode::IncrementChildNodes() {
-  std::lock_guard<std::mutex> const lock(mutex_);
   ++connected_child_nodes_;
 }
 void ThreadPoolNode::DecrementChildNodes() {
-  std::lock_guard<std::mutex> const lock(mutex_);
   --connected_child_nodes_;
 }
 uint16_t ThreadPoolNode::GetConnectedChildNodes() const {
