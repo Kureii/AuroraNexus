@@ -18,11 +18,11 @@ class ThreadPool {
   ~ThreadPool();
   void Enqueue(const Task& task);
 
-//#ifdef ENABLE_TESTS
+#ifdef ENABLE_TESTS
   [[nodiscard]]size_t GetThreadCount() const;
   [[nodiscard]]std::shared_ptr<ThreadPoolNode> GetRootNode() const;
   //size_t GetRunnungTasks();
-//#endif
+#endif
 
  private:
   uint32_t initial_count_;

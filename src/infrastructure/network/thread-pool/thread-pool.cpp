@@ -156,7 +156,7 @@ void ThreadPool::Enqueue(const Task& task) {
 
 //================================= Testing method =============================
 
-// #ifdef ENABLE_TESTS
+#ifdef ENABLE_TESTS
 size_t ThreadPool::GetThreadCount() const {
   std::lock_guard<std::mutex> const lock(mutex_);
   return thread_count_;
@@ -168,7 +168,7 @@ std::shared_ptr<ThreadPoolNode> ThreadPool::GetRootNode() const {
 // size_t ThreadPool::GetRunnungTasks() {return std::count_if(
 //           thread_status_map_.begin(), thread_status_map_.end(),
 //           [](const auto& pair) { return pair.second == kRunning; });}
-// #endif
+#endif
 
 //================================= Private method =============================
 
