@@ -7,6 +7,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <map>
+#include <atomic>
 #include "task.h"
 #include "thread-pool-node.h"
 
@@ -27,7 +28,7 @@ class ThreadPool {
  private:
   uint32_t initial_count_;
   uint16_t step_size_;
-  uint64_t queue_size_;
+  std::atomic_int64_t queue_size_;
   uint64_t thread_count_;
   std::shared_ptr<ThreadPoolNode> root_node_;
   mutable std::mutex mutex_;

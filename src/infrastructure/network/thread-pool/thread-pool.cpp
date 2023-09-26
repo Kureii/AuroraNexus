@@ -173,12 +173,10 @@ std::shared_ptr<ThreadPoolNode> ThreadPool::GetRootNode() const {
 //================================= Private method =============================
 
 void ThreadPool::IncrementThreadCount() {
-  std::lock_guard<std::mutex> const lock(mutex_);
   ++thread_count_;
 }
 
 void ThreadPool::DecrementThreadCount() {
-  std::lock_guard<std::mutex> const lock(mutex_);
   --thread_count_;
 }
 
