@@ -24,8 +24,8 @@ class ThreadPoolNode {
   std::shared_ptr<ThreadPoolNode> child_node_;
   std::shared_ptr<ThreadPoolNode> next_node_;
 
-  std::atomic<uint16_t> running_count_;
-  std::atomic<uint16_t> connected_child_nodes_;
+  std::atomic_char16_t running_count_;
+  std::atomic_uint16_t connected_child_nodes_;
 
   uint16_t node_limit_;
 
