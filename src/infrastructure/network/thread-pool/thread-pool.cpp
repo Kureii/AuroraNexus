@@ -85,7 +85,8 @@ ThreadPool::ThreadPool(uint32_t initial_count, uint16_t step_size,
           new std::list<std::shared_ptr<ThreadPoolNode>>;
 
       while (!non_end_points_lists->empty()) {
-        auto mini_root_node = std::make_shared<ThreadPoolNode>(false, step_size);
+        auto mini_root_node =
+            std::make_shared<ThreadPoolNode>(false, step_size);
         auto last_node = non_end_points_lists->back();
         non_end_points_lists->pop_back();
         {
@@ -103,7 +104,8 @@ ThreadPool::ThreadPool(uint32_t initial_count, uint16_t step_size,
         auto mini_root_node_next = mini_root_node;
         for (uint16_t j = 0;
              j < step_size - 1 && !non_end_points_lists->empty(); ++j) {
-          mini_root_node_next = std::make_shared<ThreadPoolNode>(false, step_size);
+          mini_root_node_next =
+              std::make_shared<ThreadPoolNode>(false, step_size);
           mini_root_node->SetNextNode(mini_root_node_next);
           last_node = non_end_points_lists->back();
           mini_root_node_next->SetChildNode(last_node);
@@ -169,16 +171,23 @@ std::shared_ptr<ThreadPoolNode> ThreadPool::GetRootNode() const {
 //           thread_status_map_.begin(), thread_status_map_.end(),
 //           [](const auto& pair) { return pair.second == kRunning; });}
 #endif
+void ThreadPool::MapStructure(
+    std::map<std::shared_ptr<ThreadPoolNode>, bool>& map,
+    std::shared_ptr<ThreadPoolNode> root_node) {
+  if (!root_node->IsEndNode() && root_node->GetChildNode() != nullptr) {
+    ThreadPool::MapStructure(map, root_node->GetChildNode());
+  }
+  if (root_node->GetNextNode() != nullptr) {
+    ThreadPool::MapStructure(map, root_node->GetNextNode());
+  }
+  map.insert({this, root_node->IsEndNode()});
+}
 
 //================================= Private method =============================
 
-void ThreadPool::IncrementThreadCount() {
-  ++thread_count_;
-}
+void ThreadPool::IncrementThreadCount() { ++thread_count_; }
 
-void ThreadPool::DecrementThreadCount() {
-  --thread_count_;
-}
+void ThreadPool::DecrementThreadCount() { --thread_count_; }
 
 //================================= End namespace ==============================
 

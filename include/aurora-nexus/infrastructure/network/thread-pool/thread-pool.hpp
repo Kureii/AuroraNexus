@@ -1,13 +1,14 @@
 #ifndef AURORANEXUS_THREADPOOL_H
 #define AURORANEXUS_THREADPOOL_H
 
-#include <vector>
-#include <queue>
-#include <thread>
-#include <mutex>
+#include <atomic>
 #include <condition_variable>
 #include <map>
-#include <atomic>
+#include <mutex>
+#include <queue>
+#include <thread>
+#include <vector>
+
 #include "task.h"
 #include "thread-pool-node.h"
 
@@ -20,10 +21,12 @@ class ThreadPool {
   void Enqueue(const Task& task);
 
 #ifdef ENABLE_TESTS
-  [[nodiscard]]size_t GetThreadCount() const;
-  [[nodiscard]]std::shared_ptr<ThreadPoolNode> GetRootNode() const;
-  //size_t GetRunnungTasks();
+  [[nodiscard]] size_t GetThreadCount() const;
+  [[nodiscard]] std::shared_ptr<ThreadPoolNode> GetRootNode() const;
+  // size_t GetRunnungTasks();
 #endif
+  void MapStructure(std::map<std::shared_ptr<ThreadPoolNode>, bool>& map,
+                    std::shared_ptr<ThreadPoolNode> root_node);
 
  private:
   uint32_t initial_count_;
@@ -35,7 +38,6 @@ class ThreadPool {
 
   void IncrementThreadCount();
   void DecrementThreadCount();
-
 };
 
 }  // namespace aurora_nexus
