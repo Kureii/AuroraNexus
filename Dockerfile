@@ -1,7 +1,7 @@
 FROM fedora:latest
 
 LABEL maintainer="ad.tomik@seznam.cz"
-LABEL version="0.1.1"
+LABEL version="0.1.2"
 
 RUN dnf update -y && \
     dnf install -y \
@@ -32,8 +32,11 @@ WORKDIR /app
 # Compilers
 RUN mkdir build -p && cd build && cmake .. && make
 
-# Work folder for manual execution of unit tests (it is not possible to use auto start)
+# Work folder for manual execution unit tests (it is not possible to use auto start)
 # WORKDIR /app/build/bin/tests/
+
+# Work folder for manual execution app (it is not possible to use auto start)
+# WORKDIR /app/build/bin/
 
 # Notification that port 8080 will be used
 EXPOSE 8080
