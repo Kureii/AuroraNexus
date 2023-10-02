@@ -20,6 +20,7 @@ class Request {
   std::unique_ptr<std::map<std::string, std::string>> query_; // ?query=value
   std::map<std::string, std::string> headers_; //
   std::string body_;
+  std::string body_type_;
 
   /**
    * @brief Splits a given string by a specified separator into a vector of substrings.
@@ -67,6 +68,27 @@ class Request {
    */
   void ParseURLPath(const std::string &URL);
 
+  /**
+   * @brief Parses and stores the headers from a vector of HTTP request lines.
+   *
+   * This method iterates through a vector of lines representing an HTTP request
+   * and extracts the headers, storing them in the private member variable `headers_`.
+   * Special headers like "Host" and "Content-Type" are stored in their respective
+   * private member variables `host_` and `body_type_`.
+   *
+   * @param lines A vector of strings, each representing a line in the HTTP request.
+   *
+   * @note
+   * - The method assumes that the first line of the HTTP request (the request line) is not included in the `lines` vector.
+   * - If an empty line is encountered, it is assumed that the headers section has ended, and the remaining lines are considered as the body.
+   *
+   * @example
+   * ```
+   * std::vector<std::string> my_lines = {"Host: example.com", "Content-Type: text/html", "", "body content"};
+   * Request req;
+   * req.FindHeaders(my_lines);
+   * ```
+   */
   void FindHeaders(const std::vector<std::string> &lines);
  public:
   explicit Request(const std::string& http_text);
@@ -95,17 +117,31 @@ class Request {
   /**
    * @brief Retrieves the headers of the request.
    *
-   * @return const std::map<std::string, std::string>& A map containing key-value pairs of the headers.
+   * @return const std::map<std::string, std::string>& A map containing header-value name pairs.
    */
   [[nodiscard]] const std::map<std::string, std::string> &GetHeaders() const;
+
+  /**
+   * @brief Retrieves the body of the request.
+   *
+   * @return const std::string& The body as a string without space characters.
+   */
   [[nodiscard]] const std::string &GetBody() const;
 
   /**
    * @brief Retrieves the host of the request.
    *
-   * @return const std::string& The host as a string.
+   * @return const std::string& The host URL as a string.
    */
   [[nodiscard]] const std::string &GetHost() const;
+
+
+  /**
+   * @brief Retrieves the body format of the request.
+   *
+   * @return const std::string& The body format name as a string.
+   */
+  [[nodiscard]] const std::string &GetBodyType() const;
 };
 
 }
