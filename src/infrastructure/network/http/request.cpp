@@ -16,25 +16,18 @@ namespace aurora_nexus {
 
 //================================= Public method ==============================
 
-Request::Request(const std::string &http_text) : query_(nullptr) {
+Request::Request(const std::string &http_text) : query_(nullptr), host_(""), body_(""), body_type_(""), path_(""){
   auto lines = SplitRequestText(http_text, "\r\n");
 
-  for (auto& item : lines) {
-    std::cout << "|\t" << item << "\n";
-  }
-  std::cout << "|\t------------------------------" << "\n";
-
   auto first_line = SplitRequestText(std::string(lines[0]), " ");
+
   method_ = first_line[0];
 
   ParseURLPath(first_line[1]);
 
   FindHeaders(lines);
-
-  std::cout << "|\tfull path: " << path_ << "\n";
-  std::cout << "\n\n";
-
 }
+
 const std::string &Request::GetMethod() const { return method_; }
 
 const std::string &Request::GetPath() const { return path_; }
@@ -50,6 +43,8 @@ const std::map<std::string, std::string> &Request::GetHeaders() const {
 const std::string &Request::GetBody() const { return body_; }
 
 const std::string &Request::GetHost() const { return host_; }
+
+const std::string &Request::GetBodyType() const { return body_type_; }
 
 //================================= Testing method =============================
 
@@ -111,25 +106,28 @@ void Request::ParseURLPath(const std::string &URL) {
 void Request::FindHeaders(const std::vector<std::string> &lines) {
   for (uint16_t i = 1; i < lines.size(); ++i) {
     std::string pre_line = lines[i];
+    boost::algorithm::erase_all(pre_line, " ");
     if (pre_line.empty()) {
       body_ = "";
       if (i < lines.size()-1) {
-        for (uint16_t j = i; j < lines.size(); ++j) {
-          body_ +=lines[j];
+        for (uint16_t j = i+1; j < lines.size(); ++j) {
+          pre_line = lines[j];
+          boost::algorithm::erase_all(pre_line, " ");
+          body_ += pre_line + "\n";
         }
       }
       return;
     }
-    boost::algorithm::erase_all(pre_line, " ");
     std::vector<std::string> line = SplitRequestText(pre_line, ":");
     if(line[0] == "Host") {
       host_ = line[1];
+    } else if(line[0] == "Content-Type") {
+      body_type_ = line[1];
     } else {
       headers_.emplace(line[0], line[1]);
     }
-
-
   }
+
 }
 
 //================================= End namespace ==============================
