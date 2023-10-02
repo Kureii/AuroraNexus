@@ -1,4 +1,4 @@
 set(test_sources
-    src/all-tests.cpp
+    src/request-tests.cpp
     #src/threadpool-tests.cpp
 )
