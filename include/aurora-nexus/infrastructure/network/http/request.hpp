@@ -14,13 +14,13 @@
 namespace aurora_nexus {
 
 class Request {
+  std::unique_ptr<std::map<std::string, std::string>> query_; // ?query=value
   std::string method_;  // GET, POST, atd.
   std::string path_;    // /home, /blog, atd.
   std::string host_;    //
-  std::unique_ptr<std::map<std::string, std::string>> query_; // ?query=value
-  std::map<std::string, std::string> headers_; //
-  std::string body_;
   std::string body_type_;
+  std::string body_;
+  std::map<std::string, std::string> headers_; //
 
   /**
    * @brief Splits a given string by a specified separator into a vector of substrings.
@@ -90,7 +90,27 @@ class Request {
    * ```
    */
   void FindHeaders(const std::vector<std::string> &lines);
+
  public:
+  /**
+   * @brief Constructs a Request object by parsing an HTTP request text.
+   *
+   * This constructor takes a string representing an entire HTTP request and initializes
+   * the object by parsing the request line, headers, and body. It utilizes helper methods
+   * like `ParseURLPath` and `FindHeaders` to accomplish this.
+   *
+   * @param http_text A string containing the full HTTP request text.
+   *
+   * @note
+   * - The constructor assumes that the HTTP request text is well-formed.
+   * - The `query_`, `host_`, `body_`, `body_type_`, and `path_` member variables are initialized to their default values before parsing.
+   *
+   * @example
+   * ```
+   * std::string my_http_text = "GET /path?name=John HTTP/1.1\r\nHost: example.com\r\n\r\n";
+   * Request req(my_http_text);
+   * ```
+   */
   explicit Request(const std::string& http_text);
 
   /**
