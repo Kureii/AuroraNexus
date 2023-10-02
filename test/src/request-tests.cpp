@@ -26,9 +26,9 @@ std::string get_method_with_query = "GET /blog?article=Fdf56dDSz51&cmnt_sort=dat
     "User-Agent: curl/8.0.1\r\n"
     "Accept: */*\r\n\r\n";
 
-std::string post_method_form = "POST /login HTTP/1.1\r\n"
+std::string post_method_json = "POST /login HTTP/1.1\r\n"
     "Host: example.com\r\n"
-    "Content-Type: application/x-www-form-urlencoded\r\n"
+    "Content-Type: application/json\r\n"
     "Content-Length: 39\r\n"
     "\r\n"
     "{\r\n"
@@ -97,4 +97,30 @@ TEST(REQUEST_TEST, get_headers) {
   result.emplace("Accept","*/*");
 
   ASSERT_EQ(request->GetHeaders(), result);
+}
+
+TEST(REQUEST_TEST, get_empty_body) {
+  auto request = std::make_unique<aurora_nexus::Request>(empty_get_method.c_str());
+
+  ASSERT_TRUE(request->GetBody().empty());
+}
+
+TEST(REQUEST_TEST, get_empty_body_type) {
+  auto request = std::make_unique<aurora_nexus::Request>(empty_get_method.c_str());
+
+ ASSERT_TRUE(request->GetBodyType().empty());
+}
+
+TEST(REQUEST_TEST, get_body) {
+  auto request = std::make_unique<aurora_nexus::Request>(post_method_json.c_str());
+
+  std::string result = "{\n\"username\":\"your_username\",\n\"password\":\"your_password\"\n}\n";
+  ASSERT_EQ(request->GetBody(), result);
+}
+
+TEST(REQUEST_TEST, get_body_type) {
+  auto request = std::make_unique<aurora_nexus::Request>(post_method_json.c_str());
+
+  std::string result = "application/json";
+  ASSERT_EQ(request->GetBodyType(), result);
 }
