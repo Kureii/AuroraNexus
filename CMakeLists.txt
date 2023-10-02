@@ -36,16 +36,16 @@ add_executable(${PROJECT_NAME}
   ${headers}
 )
 
-if(ENABLE_UNIT_TESTING)
-  add_library(${PROJECT_NAME}_LIB ${headers} ${sources})
-  set_target_properties(
-    ${PROJECT_NAME}_LIB
-    PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
-    OUTPUT_NAME ${PROJECT_NAME}
-  )
-endif()
+#if(ENABLE_UNIT_TESTING)
+#  add_library(${PROJECT_NAME}_LIB ${headers} ${sources})
+#  set_target_properties(
+#    ${PROJECT_NAME}_LIB
+#    PROPERTIES
+#    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
+#    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
+#    OUTPUT_NAME ${PROJECT_NAME}
+#  )
+#endif()
 
 set_target_properties(
   ${PROJECT_NAME}
@@ -57,10 +57,12 @@ set_target_properties(
 
 # Packages
 find_package(Boost REQUIRED)
+find_package(RapidJSON REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIRS})
 
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
+target_include_directories(${PROJECT_NAME} PRIVATE ${RapidJSON_INCLUDE_DIRS})
 
 # Unit testing setup
 if(ENABLE_UNIT_TESTING)
